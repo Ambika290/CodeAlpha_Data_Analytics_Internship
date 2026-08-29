@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from pathlib import Path
 
 
 # ==========================================
@@ -20,7 +21,15 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("books_data.csv")
+
+    # Get the folder where dashboard.py is located
+    BASE_DIR = Path(__file__).resolve().parent
+
+    # Create the correct path to books_data.csv
+    DATA_FILE = BASE_DIR / "books_data.csv"
+
+    # Read CSV file
+    df = pd.read_csv(DATA_FILE)
 
     # Clean Price column
     df["Price"] = (
@@ -100,10 +109,7 @@ else:
     lowest_price = 0
 
 
-col1.metric(
-    "Total Books",
-    total_books
-)
+col1.metric("Total Books", total_books)
 
 col2.metric(
     "Average Price",
@@ -145,11 +151,7 @@ else:
         .reset_index()
     )
 
-    rating_counts.columns = [
-        "Rating",
-        "Number of Books"
-    ]
-
+    rating_counts.columns = ["Rating", "Number of Books"]
 
     fig_rating = px.bar(
         rating_counts,
@@ -166,8 +168,7 @@ else:
 
     st.plotly_chart(
         fig_rating,
-        use_container_width=True,
-        config={"displayModeBar": True}
+        use_container_width=True
     )
 
 
@@ -189,8 +190,7 @@ else:
 
     st.plotly_chart(
         fig_price,
-        use_container_width=True,
-        config={"displayModeBar": True}
+        use_container_width=True
     )
 
 
@@ -212,7 +212,6 @@ else:
         "Average Price"
     ]
 
-
     fig_avg_price = px.bar(
         average_price_by_rating,
         x="Rating",
@@ -228,8 +227,7 @@ else:
 
     st.plotly_chart(
         fig_avg_price,
-        use_container_width=True,
-        config={"displayModeBar": True}
+        use_container_width=True
     )
 
 
@@ -245,7 +243,6 @@ else:
         )
         .head(10)
     )
-
 
     fig_top_books = px.bar(
         top_books,
@@ -269,8 +266,7 @@ else:
 
     st.plotly_chart(
         fig_top_books,
-        use_container_width=True,
-        config={"displayModeBar": True}
+        use_container_width=True
     )
 
 
@@ -284,7 +280,6 @@ else:
 
     display_df = filtered_df.copy()
 
-    # Format price with ₹ symbol
     display_df["Price"] = display_df["Price"].apply(
         lambda x: f"₹{x:.2f}"
     )
